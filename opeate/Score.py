@@ -1,4 +1,4 @@
-from util.Util import _successors, _is_resolved
+from util import _successors, _is_resolved
 import math
 def get_frog_cost(fidelity, dep, ori, grems, matrix):   
     vcir = grems[ori]   
