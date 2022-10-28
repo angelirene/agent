@@ -3,11 +3,11 @@ from copy import copy
 from operate.gate_operate import _apply_gate
 from qiskit.dagcircuit import DAGNode, DAGOpNode
 from util.Util import _successors, _is_resolved
-from operate.gate_operate import _apply_gate_frog, _apply_gate
-from util.Score import get_scores
+from operate import _apply_gate_frog, _apply_gate
+from Score import get_scores
 from qiskit.circuit.library.standard_gates import SwapGate,CXGate
-from operate.operate import _obtain_swaps
-from util.Score import get_frog_cost
+from operate import _obtain_swaps
+from Score import get_frog_cost
 
 
 def findActivate_frog(frog, dag, coupling_map, canonical_register, cx_error_dist, Qubit, Q):
