@@ -1,4 +1,4 @@
-from util.Util import _successors, _is_resolved
+from util import _successors, _is_resolved
 
 def _obtain_extended_set(dag, front_layer, applied_predecessors, EXTENDED_SET_SIZE):
     extended_set = list()
