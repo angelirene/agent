@@ -1,7 +1,7 @@
 
 from collections import defaultdict
 from qiskit import QuantumCircuit
-from util.Util import _successors
+from util import _successors
 import numpy as np
 
 class Frog:
