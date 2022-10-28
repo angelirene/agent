@@ -3,11 +3,10 @@ from qiskit.circuit.quantumregister import Qubit
 from qiskit import QuantumRegister, QuantumCircuit
 import numpy as np
 from qiskit.dagcircuit import DAGNode, DAGOpNode
-from util.Util import _successors, _is_resolved
-from operate.gate_operate import  _apply_gate
-from util.Score import get_map_scores
-# from operate.layout_operate import get_layer_set
-from operate.operate import _obtain_swaps
+from util import _successors, _is_resolved
+from operate import  _apply_gate
+from Score import get_map_scores
+from operate import _obtain_swaps
 from qiskit.circuit.library.standard_gates import SwapGate,CXGate
 def get_Mapping(cx_error_dist,dag, coupling_map, current_layout, Q, canonical_register, _bit_indices, EXTENDED_SET_SIZE):
     # Q = QuantumRegister(coupling_map.size(), "q")
