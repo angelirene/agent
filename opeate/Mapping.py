@@ -1,14 +1,19 @@
-from collections import defaultdict
+﻿from collections import defaultdict
 from qiskit.circuit.quantumregister import Qubit
 from qiskit import QuantumRegister, QuantumCircuit
 import numpy as np
 from qiskit.dagcircuit import DAGNode, DAGOpNode
 from util import _successors, _is_resolved
 from operate import  _apply_gate
-from Score import get_map_scores
+from score import get_map_scores
 from operate import _obtain_swaps
-from qiskit.circuit.library.standard_gates import SwapGate,CXGate
-def get_Mapping(cx_error_dist,dag, coupling_map, current_layout, Q, canonical_register, _bit_indices, EXTENDED_SET_SIZE):
+from qiskit.circuit.library.standard_gates import SwapGate, CXGate
+# This is an init mapping function
+# coupling_map
+# current_layout
+# dag
+#
+def get_Mapping(cx_error_dist,dag, coupling_map, current_layout, Q, canonical_register, _bit_indices):
     # Q = QuantumRegister(coupling_map.size(), "q")
     fidentity = 1.0
     seed = np.random.randint(0, np.iinfo(np.int32).max)
@@ -46,12 +51,8 @@ def get_Mapping(cx_error_dist,dag, coupling_map, current_layout, Q, canonical_re
         for swap_qubits in swap_scores:
             trial_layout = current_layout.copy()
             trial_layout.swap(*swap_qubits)
-            scores = get_map_scores(coupling_map, front_layer, current_layout, trial_layout,
-                                applied_predecessors, dag, EXTENDED_SET_SIZE)
+            scores = get_map_scores(coupling_map, front_layer, current_layout, trial_layout)
             swap_scores[swap_qubits] = scores
-        # best_swaps = [k for k, v in swap_scores.items() if v[1] == 2]
-        # if len(best_swaps) == 0:
-        #     best_swaps = [k for k, v in swap_scores.items() if v[1] == 1]
         max_score = max(swap_scores.values())
         best_swaps = [k for k, v in swap_scores.items() if v == max_score]
         # print(best_swaps)
@@ -64,5 +65,4 @@ def get_Mapping(cx_error_dist,dag, coupling_map, current_layout, Q, canonical_re
         current_layout.swap(*best_swap)
         num_search_steps += 1
         # print(max_score, num_search_steps, best_swap, mapped_cir.count_ops())
-    return fidentity / num_search_steps, mapped_cir, current_layout
-
+    return fidentity, mapped_cir, current_layout

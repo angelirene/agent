@@ -1,15 +1,15 @@
 import random
 from copy import copy
-from operate.gate_operate import _apply_gate
+from operate import _apply_gate
 from qiskit.dagcircuit import DAGNode, DAGOpNode
-from util.Util import _successors, _is_resolved
-from operate import _apply_gate_frog, _apply_gate
-from Score import get_scores
+from util import _successors, _is_resolved
+from operate import _apply_gate_frog
+from score import get_scores
 from qiskit.circuit.library.standard_gates import SwapGate,CXGate
 from operate import _obtain_swaps
-from Score import get_frog_cost
+from score import get_frog_cost
 
-
+# This is a function to
 def findActivate_frog(frog, dag, coupling_map, canonical_register, cx_error_dist, Qubit, Q):
     # Q = QuantumRegister(coupling_map.size(), "q")
     while frog.front_layer:
@@ -26,7 +26,7 @@ def findActivate_frog(frog, dag, coupling_map, canonical_register, cx_error_dist
                 execute_gate_list.append(node)
         if execute_gate_list:
             for node in execute_gate_list:
-                frog = _apply_gate_frog(frog, node, canonical_register, cx_error_dist)
+                _apply_gate_frog(frog.mapped_cir, node, frog.current_layout, canonical_register)
                 frog.front_layer.remove(node)
                 # print("front_layer.remove(node)", node.qargs)
                 for successor in _successors(node, dag):
@@ -37,6 +37,7 @@ def findActivate_frog(frog, dag, coupling_map, canonical_register, cx_error_dist
         else:
             break
     return frog
+
 def updateActivate_frog(frog, dag, coupling_map, canonical_register, cx_error_dist, Qubit, Q):
     execute_gate_list = []
     # Remove as many immediately applicable gates as possible
@@ -50,7 +51,7 @@ def updateActivate_frog(frog, dag, coupling_map, canonical_register, cx_error_di
             execute_gate_list.append(node)
     if execute_gate_list:
         for node in execute_gate_list:
-            frog = _apply_gate_frog(frog, node, canonical_register, cx_error_dist)
+            _apply_gate_frog(frog.mapped_cir, node, frog.current_layout, canonical_register)
             frog.front_layer.remove(node)
             for successor in _successors(node, dag):
                 frog.applied_predecessors[successor] += 1
@@ -77,11 +78,10 @@ def frog_map(frogs, dag, coupling_map, canonical_register, _bit_indices, cx_erro
                     trial_layout.swap(*swap_qubits)
                     scores = get_scores
                     swap_scores[swap_qubits] = scores(coupling_map, frog, trial_layout)
-                max_score = max(swap_scores.values())
-                best_swaps = [k for k, v in swap_scores.items() if v == max_score]
+                best_swaps = [k for k, v in swap_scores.items() if v >= 0]
                 best_swap = random.choice(best_swaps)
                 swap_node = DAGOpNode(op=SwapGate(), qargs=best_swap)
-                frog = _apply_gate_frog(frog, swap_node, canonical_register, cx_error_dist)
+                _apply_gate_frog(frog.mapped_cir, swap_node, frog.current_layout, canonical_register)
                 frog.current_layout.swap(*best_swap)
                 frog = updateActivate_frog(frog, dag, coupling_map, canonical_register, cx_error_dist, Qubit, Q)
                 frog = findActivate_frog(frog, dag, coupling_map, canonical_register, cx_error_dist, Qubit, Q)
